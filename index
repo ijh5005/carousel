@@ -121,17 +121,16 @@ body {
 var app = angular.module('app', []);
 
 app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'animation', function($scope, $rootScope, $interval, $timeout, animation){
-
+  $rootScope.carouselRunning = false;
   $scope.slideCarousel = (direction) => {
-    animation.slideCarousel(direction);
+    if(!$rootScope.carouselRunning){
+      $rootScope.carouselRunning = true;
+      animation.slideCarousel(direction);
+    }
   }
-  $scope.slideCarousel = (direction) => {
-    animation.slideCarousel(direction);
-  }
-
 }]);
 
-app.service('animation', function($timeout) {
+app.service('animation', function($rootScope, $timeout) {
   this.slideCarousel = (direction) => {
     const directionToMove = (direction === 'right') ? 'right' : 'left';
     const $centerSlide = $('.centerSlide');
@@ -171,7 +170,9 @@ app.service('animation', function($timeout) {
         $centerSlide.removeClass('noTransition');
         $slideOffScreen.removeClass('noTransition');
         $slideToMiddle.removeClass('noTransition');
+        $rootScope.carouselRunning = false;
       }, 100)
     });
   }
 })
+
